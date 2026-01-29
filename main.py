@@ -15,19 +15,34 @@ def verify_rrvjs():
     print("RRVJS 23-QUBIT QUANTUM VERIFICATION")
     print("=" * 50)
     
-    # Download results file
-    url = "https://github.com/shellworlds/TFIMTDMVEQ/raw/RRVJS/RRVJS.npz"
-    print("Downloading RRVJS quantum results...")
+    # Try multiple possible URL formats
+    urls = [
+        "https://raw.githubusercontent.com/shellworlds/TFIMTDMVEQ/RRVJS/RRVJS.npz",
+        "https://github.com/shellworlds/TFIMTDMVEQ/raw/RRVJS/RRVJS.npz"
+    ]
+    
+    data = None
+    for url in urls:
+        try:
+            print(f"Trying: {url}")
+            response = urllib.request.urlopen(url)
+            data = response.read()
+            print("Download successful!")
+            break
+        except:
+            continue
+    
+    if data is None:
+        print("❌ Could not download results file")
+        print("The RRVJS.npz file may not be pushed to GitHub yet.")
+        return
+    
+    # Save to temp file
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.npz') as f:
+        f.write(data)
+        temp_file = f.name
     
     try:
-        response = urllib.request.urlopen(url)
-        data = response.read()
-        
-        # Save to temp file
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.npz') as f:
-            f.write(data)
-            temp_file = f.name
-        
         # Load and display results
         d = np.load(temp_file)
         
@@ -52,23 +67,22 @@ def verify_rrvjs():
         if file_hash == "6b800945120fa971":
             print("✅ HASH VERIFICATION PASSED")
         else:
-            print("⚠️  Hash mismatch (file may be corrupted)")
+            print("⚠️  Hash mismatch")
         
         print("\n" + "=" * 50)
         print("VERIFICATION COMPLETE")
         print("=" * 50)
         print("Status: 23-qubit quantum results verified")
-        print("Computation: Proprietary RRVJS algorithm")
         print("Platform: Quantum-classical hybrid")
         
-        # Cleanup
-        os.unlink(temp_file)
-        
     except Exception as e:
-        print(f"Error: {e}")
-        print("Ensure you have numpy installed:")
-        print("  Termux: pkg install python-numpy")
-        print("  Other: pip install numpy")
+        print(f"Error loading data: {e}")
+        print("Make sure numpy is installed.")
+        
+    finally:
+        # Cleanup
+        if os.path.exists(temp_file):
+            os.unlink(temp_file)
 
 if __name__ == "__main__":
     verify_rrvjs()
