@@ -1,0 +1,34 @@
+MOBILE TEST TRANSFER INSTRUCTIONS
+=================================
+
+1. ON COMPUTER (You):
+   - File: mobile_test.tar.gz
+   - Size: ~10KB
+   - Transfer via: Email, WhatsApp, Google Drive, etc.
+
+2. ON MOBILE (User):
+   A. Using Termux (Android):
+      pkg install python
+      # Transfer file to Termux:
+      cp /sdcard/Download/mobile_test.tar.gz .
+      tar -xzf mobile_test.tar.gz
+      python verify_light.py
+
+   B. Using Pythonista (iOS) or similar:
+      - Extract files
+      - Run verify_light.py
+
+   C. No installation (Web):
+      Open: https://github.com/shellworlds/TFIMTDMVEQ
+      Check: data/tfim_ground_state.png
+      View: README.md for results
+
+3. EXPECTED OUTPUT:
+   - Python version info
+   - Results table (2-4 qubits)
+   - Verification steps
+   - Status confirmation
+
+4. ALTERNATIVE (Quick Check):
+   Open browser to:
+   https://github.com/shellworlds/TFIMTDMVEQ/raw/main/data/tfim_ground_state.png

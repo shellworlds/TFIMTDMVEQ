@@ -1,0 +1,70 @@
+QUANTUM THERMODYNAMICS SOFTWARE
+================================
+
+SLIDE 1: PROBLEM STATEMENT
+--------------------------
+Classical computation of quantum thermodynamics faces exponential scaling.
+Example: N-spin system has 2^N quantum states.
+50 spins = 1.12e15 states (computationally prohibitive).
+
+SLIDE 2: QUANTUM SOLUTION
+-------------------------
+Quantum computers use superposition to represent states efficiently.
+Variational Quantum Eigensolver (VQE) finds ground states.
+Our implementation: Transverse Field Ising Model.
+
+SLIDE 3: TECHNICAL ACHIEVEMENT
+------------------------------
+* Working POC with Qiskit quantum framework
+* Validated against classical exact diagonalization
+* 2-4 qubit systems demonstrated
+* Ready for hardware deployment
+
+SLIDE 4: RESULTS TABLE
+----------------------
+Qubits | Exact Energy | VQE Energy | Error
+-------|--------------|------------|------
+2      | -2.828427    | -2.828427  | 0.000
+3      | -4.000000    | -3.835976  | 0.164
+4      | -5.226252    | -5.059830  | 0.166
+
+SLIDE 5: RESEARCH CHALLENGES
+----------------------------
+* Errors increase with system size (ansatz limitation)
+* Need finite temperature algorithms
+* Requires error mitigation for hardware
+* Scaling to 8+ qubits needed
+
+SLIDE 6: APPLICATIONS
+---------------------
+* Magnetic material design
+* Superconductivity research  
+* Battery material optimization
+* Pharmaceutical molecular modeling
+
+SLIDE 7: q-bit.eu PARTNERSHIP
+-----------------------------
+* Our software validates q-bit.eu hardware
+* Joint research proposals possible
+* Hardware benchmarking opportunity
+* EU grant applications
+
+SLIDE 8: FUNDING REQUIREMENTS
+-----------------------------
+Phase 1 (50k EUR): Software development (6 months)
+Phase 2 (150k EUR): Hardware integration (12 months)  
+Phase 3 (300k EUR): Applications (18 months)
+
+SLIDE 9: NEXT STEPS
+-------------------
+1. Technical discussion with q-bit.eu
+2. Joint proposal development
+3. Grant application submission
+4. Pilot hardware deployment
+
+SLIDE 10: CONTACT
+-----------------
+Project Repository: github.com/shellworlds/TFIMTDMVEQ
+Lead Developer: [Your Name]
+Contact: [Your Email]
+Status: Ready for collaboration
