@@ -1,0 +1,43 @@
+name: Sync to Private Repository
+
+on:
+  push:
+    branches: [ZIUSPACE]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Public Repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: Configure Git
+        run: |
+          git config --global user.email "corporate@borelsigma.com"
+          git config --global user.name "BorelSigmaInc"
+          
+      - name: Push to Private Repository
+        env:
+          PRIVATE_REPO_URL: https://x-access-token:${{ secrets.PRIVATE_REPO_TOKEN }}@github.com/BorelSigmaInc/ZIUSPACE.git
+        run: |
+          # Clone private repo
+          git clone $PRIVATE_REPO_URL private-repo-temp
+          cd private-repo-temp
+          
+          # Remove all existing files
+          git rm -rf . || true
+          git clean -fd || true
+          
+          # Copy all files from public repo
+          cp -r ../* .
+          cp -r ../.* . 2>/dev/null || true
+          
+          # Remove the .git directory if copied
+          rm -rf .github .git 2>/dev/null || true
+          
+          # Add, commit, and push
+          git add .
+          git commit -m "Auto-sync from public ZIUSPACE branch - $(date)" || echo "No changes to commit"
+          git push origin main
