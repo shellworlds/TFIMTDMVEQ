@@ -1,0 +1,125 @@
+#!/usr/bin/env python3
+"""
+Transverse Field Ising Model (TFIM) Ground State via VQE
+Simple Proof of Concept for Quantum Thermodynamics
+"""
+
+import numpy as np
+from qiskit.quantum_info import SparsePauliOp
+from qiskit_algorithms import VQE
+from qiskit_algorithms.optimizers import SLSQP
+from qiskit.circuit.library import TwoLocal
+from qiskit.primitives import StatevectorEstimator
+import matplotlib.pyplot as plt
+
+def create_tfim_hamiltonian(n_qubits=2, J=1.0, h=1.0):
+    """
+    Create TFIM Hamiltonian for n-qubit chain with periodic boundary conditions
+    H = -J Σ σ_i^z σ_{i+1}^z - h Σ σ_i^x
+    """
+    pauli_list = []
+    coeffs = []
+    
+    # Nearest neighbor ZZ couplings
+    for i in range(n_qubits):
+        j = (i + 1) % n_qubits  # Periodic boundary
+        
+        # Create Pauli string with Z at positions i and j
+        pauli_str = ['I'] * n_qubits
+        pauli_str[i] = 'Z'
+        pauli_str[j] = 'Z'
+        pauli_str = ''.join(pauli_str)
+        
+        pauli_list.append(pauli_str)
+        coeffs.append(-J)  # -J σ_i^z σ_j^z
+    
+    # Transverse field X terms
+    for i in range(n_qubits):
+        # Create Pauli string with X at position i
+        pauli_str = ['I'] * n_qubits
+        pauli_str[i] = 'X'
+        pauli_str = ''.join(pauli_str)
+        
+        pauli_list.append(pauli_str)
+        coeffs.append(-h)  # -h σ_i^x
+    
+    return SparsePauliOp(pauli_list, coeffs=coeffs)
+
+def exact_diagonalization(hamiltonian):
+    """Calculate exact ground state energy via diagonalization"""
+    matrix = hamiltonian.to_matrix()
+    eigenvalues = np.linalg.eigvalsh(matrix)
+    return np.min(eigenvalues.real)
+
+def run_vqe(hamiltonian, n_qubits):
+    """Run VQE to find ground state energy"""
+    # Variational ansatz circuit
+    ansatz = TwoLocal(n_qubits, 'ry', 'cz', reps=2, entanglement='linear')
+    
+    # Optimizer
+    optimizer = SLSQP(maxiter=1000)
+    
+    # VQE instance - using StatevectorEstimator for simulation
+    vqe = VQE(
+        estimator=StatevectorEstimator(),
+        ansatz=ansatz,
+        optimizer=optimizer,
+        initial_point=np.random.random(ansatz.num_parameters)
+    )
+    
+    result = vqe.compute_minimum_eigenvalue(hamiltonian)
+    return result.eigenvalue.real, ansatz
+
+def main():
+    print("TFIM Ground State Calculation via VQE")
+    print("=" * 50)
+    
+    # Parameters
+    n_qubits = 2  # Start small for POC
+    J = 1.0
+    h_values = np.linspace(0.1, 2.0, 5)  # Range of field strengths
+    
+    exact_energies = []
+    vqe_energies = []
+    
+    for h in h_values:
+        print(f"\nField strength h = {h:.2f}")
+        
+        # Create Hamiltonian
+        hamiltonian = create_tfim_hamiltonian(n_qubits, J, h)
+        
+        # Exact diagonalization (classical reference)
+        exact_energy = exact_diagonalization(hamiltonian)
+        exact_energies.append(exact_energy)
+        print(f"  Exact ground energy: {exact_energy:.6f}")
+        
+        # VQE calculation (quantum algorithm)
+        vqe_energy, ansatz = run_vqe(hamiltonian, n_qubits)
+        vqe_energies.append(vqe_energy)
+        print(f"  VQE ground energy:  {vqe_energy:.6f}")
+        print(f"  Error: {abs(vqe_energy - exact_energy):.6f}")
+        print(f"  Ansatz parameters: {ansatz.num_parameters}")
+    
+    # Plot results
+    plt.figure(figsize=(10, 6))
+    plt.plot(h_values, exact_energies, 'o-', label='Exact', linewidth=2)
+    plt.plot(h_values, vqe_energies, 's--', label='VQE', linewidth=2)
+    plt.xlabel('Transverse Field Strength (h)')
+    plt.ylabel('Ground State Energy')
+    plt.title(f'TFIM Ground State Energy (n={n_qubits}, J={J})')
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    
+    # Save plot
+    plt.savefig('../data/tfim_ground_state.png', dpi=150, bbox_inches='tight')
+    print(f"\nPlot saved to data/tfim_ground_state.png")
+    
+    # Save data
+    np.savez('../data/tfim_results.npz',
+             h_values=h_values,
+             exact_energies=exact_energies,
+             vqe_energies=vqe_energies)
+    print("Data saved to data/tfim_results.npz")
+
+if __name__ == "__main__":
+    main()
