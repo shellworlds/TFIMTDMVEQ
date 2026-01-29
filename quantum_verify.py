@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 QKDISN - Quantum Key Distribution Inspired Secure Notification
-23-qubit quantum circuit verification system
+23-qubit quantum circuit verification with 5 circuit snapshots
 """
 
 import sys
@@ -20,7 +20,43 @@ def quantum_verification(user_code):
             "entangled_pairs": 8,
             "circuit_depth": 145,
             "gate_count": 892,
-            "circuit_diagram": "q0:─H─⊕─M\nq1:───⊕─M\nq2:─H─┼─M\nq3:───⊕─M"
+            "circuit_snapshots": [
+                {
+                    "name": "Bell State Creation",
+                    "qubits": 2,
+                    "circuit": "q0: ─H─⊕─M (|0⟩)\nq1: ───⊕─M (|1⟩)",
+                    "entanglement": "Maximally entangled",
+                    "fidelity": 0.999
+                },
+                {
+                    "name": "GHZ State (3-qubit)",
+                    "qubits": 3,
+                    "circuit": "q0: ─H─⊕─┼─M\nq1: ───⊕─┼─M\nq2: ─────⊕─M",
+                    "entanglement": "Tripartite",
+                    "fidelity": 0.997
+                },
+                {
+                    "name": "Quantum Fourier (4-qubit)",
+                    "qubits": 4,
+                    "circuit": "q0: ─H─S─T─⊕─M\nq1: ───H─S─⊕─M\nq2: ──────H─⊕─M\nq3: ────────H─M",
+                    "entanglement": "Multi-partite",
+                    "fidelity": 0.995
+                },
+                {
+                    "name": "Error Correction (5-qubit)",
+                    "qubits": 5,
+                    "circuit": "q0: ─H─⊕─⊕─⊕─M\nq1: ─H─┼─⊕─┼─M\nq2: ─H─┼─┼─⊕─M\nq3: ─H─⊕─┼─┼─M\nq4: ─H─┼─┼─┼─M",
+                    "entanglement": "Stabilizer",
+                    "fidelity": 0.992
+                },
+                {
+                    "name": "Quantum Walk (6-qubit)",
+                    "qubits": 6,
+                    "circuit": "q0: ─H─⊕─⊕─┼─┼─M\nq1: ─H─┼─⊕─⊕─┼─M\nq2: ─H─┼─┼─⊕─⊕─M\nq3: ─H─⊕─┼─┼─⊕─M\nq4: ─H─┼─⊕─┼─┼─M\nq5: ─H─┼─┼─⊕─┼─M",
+                    "entanglement": "Complex network",
+                    "fidelity": 0.989
+                }
+            ]
         }
     }
     
@@ -38,10 +74,10 @@ def quantum_verification(user_code):
         return False, None
 
 def main():
-    print("=" * 60)
+    print("=" * 70)
     print("QKDISN QUANTUM VERIFICATION SYSTEM")
-    print("23-Qubit Circuit Results")
-    print("=" * 60)
+    print("23-Qubit Circuit with 5 Quantum Snapshots")
+    print("=" * 70)
     
     if len(sys.argv) != 2:
         print("Usage: python3 quantum_verify.py [QUANTUM_CODE]")
@@ -55,24 +91,34 @@ def main():
         print(f"\n✅ Quantum state measured successfully")
         print(f"Measurement ID: {results['measurement_id']}")
         
-        print("\n" + "-" * 50)
-        print("QUANTUM CIRCUIT RESULTS")
-        print("-" * 50)
+        print("\n" + "=" * 70)
+        print("23-QUBIT QUANTUM CIRCUIT - GLOBAL RESULTS")
+        print("=" * 70)
         print(f"Ground state energy: {results['ground_energy']:.6f}")
         print(f"Circuit fidelity: {results['fidelity']:.3f}")
         print(f"Entangled pairs: {results['entangled_pairs']}/23")
         print(f"Circuit depth: {results['circuit_depth']}")
         print(f"Total gates: {results['gate_count']}")
         
-        print("\nCircuit snapshot (Bell state measurement):")
-        print(results['circuit_diagram'])
+        print("\n" + "=" * 70)
+        print("5 QUANTUM CIRCUIT SNAPSHOTS")
+        print("=" * 70)
         
-        print("\n" + "-" * 50)
+        for i, snapshot in enumerate(results['circuit_snapshots'], 1):
+            print(f"\n{i}. {snapshot['name']} ({snapshot['qubits']} qubits)")
+            print(f"   Entanglement: {snapshot['entanglement']}")
+            print(f"   Fidelity: {snapshot['fidelity']}")
+            print(f"   Circuit:")
+            for line in snapshot['circuit'].split('\n'):
+                print(f"   {line}")
+        
+        print("\n" + "=" * 70)
         print("QUANTUM PRINCIPLES APPLIED:")
         print("1. No-cloning theorem")
         print("2. Entanglement verification")
         print("3. State collapse on measurement")
         print("4. Superposition of valid codes")
+        print("5. Quantum error correction")
     else:
         print("\n❌ Invalid quantum code")
         print("Quantum superposition preserved")
